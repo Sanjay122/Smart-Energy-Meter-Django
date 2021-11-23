@@ -15,9 +15,11 @@ Including another URLconf
 """
 
 from django.urls import path
+from django.urls.conf import include
 from . import views
 app_name="EB_App"
 
 urlpatterns = [
     path('', views.getHome,name="home"),
+    path('adminHome/',views.admin,name="adminHome"),
 ]
