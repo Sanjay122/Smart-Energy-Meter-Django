@@ -31,3 +31,60 @@ class Consumer(models.Model):
 
     def __str__(self):
         return self.account.user.username
+
+
+class Bill(models.Model):
+    consumer = models.ForeignKey(Consumer, on_delete=models.CASCADE)
+    year = models.IntegerField()
+    month = models.IntegerField()
+    last_bill_reading = models.DecimalField(decimal_places=2, max_digits=10)
+    present_bill_reading = models.DecimalField(decimal_places=2, max_digits=10)
+    power_consumption = models.DecimalField(decimal_places=2, max_digits=10)
+    bill_amount = models.DecimalField(decimal_places=2, max_digits=10)
+    paid = models.BooleanField()
+
+
+class MonthWiseData(models.Model):
+    consumer = models.ForeignKey(Consumer, on_delete=models.CASCADE)
+    year = models.IntegerField()
+    month = models.IntegerField()
+    power_consumed = models.DecimalField(decimal_places=2,max_digits=10)
+    average_voltage = models.DecimalField(decimal_places=2,max_digits=10)
+    average_current = models.DecimalField(decimal_places=2,max_digits=10)
+    average_power_factor = models.DecimalField(decimal_places=2,max_digits=10)
+
+
+class WeekWiseData(models.Model):
+    consumer = models.ForeignKey(Consumer, on_delete=models.CASCADE)
+    year = models.IntegerField()
+    month = models.IntegerField()
+    week = models.IntegerField()
+    power_consumed = models.DecimalField(decimal_places=2,max_digits=10)
+    average_voltage = models.DecimalField(decimal_places=2,max_digits=10)
+    average_current = models.DecimalField(decimal_places=2,max_digits=10)
+    average_power_factor = models.DecimalField(decimal_places=2,max_digits=10)
+
+
+class DayWiseData(models.Model):
+    consumer = models.ForeignKey(Consumer, on_delete=models.CASCADE)
+    year = models.IntegerField()
+    month = models.IntegerField()
+    week = models.IntegerField()
+    day = models.IntegerField()
+    power_consumed = models.DecimalField(decimal_places=2,max_digits=10)
+    average_voltage = models.DecimalField(decimal_places=2,max_digits=10)
+    average_current = models.DecimalField(decimal_places=2,max_digits=10)
+    average_power_factor = models.DecimalField(decimal_places=2,max_digits=10)
+
+
+class WithinADayData(models.Model):
+    consumer = models.ForeignKey(Consumer, on_delete=models.CASCADE)
+    year = models.IntegerField()
+    month = models.IntegerField()
+    week = models.IntegerField()
+    day = models.IntegerField()
+    hour = models.IntegerField()
+    power_consumed = models.DecimalField(decimal_places=2,max_digits=10)
+    average_voltage = models.DecimalField(decimal_places=2,max_digits=10)
+    average_current = models.DecimalField(decimal_places=2,max_digits=10)
+    average_power_factor = models.DecimalField(decimal_places=2,max_digits=10)
