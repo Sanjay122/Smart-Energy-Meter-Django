@@ -33,8 +33,9 @@
         <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();">
             <i class="fa fa-bars"></i>  Menu
         </button>
+        {% url 'login' as login %}
         <span class="w3-bar-item w3-left">Smart Energy Meter</span> <span class="w3-bar-item w3-right"><a
-                href="/login">Sign in</a></span>
+                href="{{ login }}">Sign in</a></span>
     </div>
 
 
@@ -50,7 +51,7 @@
         </header>
 
         <div class="w3-row-padding w3-margin-bottom">
-            <a href="/login">Login</a> to view
+            <a href="{{ login }}">Login</a> to view
         </div>
 
         <!-- Footer -->
@@ -62,10 +63,10 @@
 
     <script>
         // Get the Sidebar
-        var mySidebar = document.getElementById("mySidebar");
+        let mySidebar = document.getElementById("mySidebar");
 
         // Get the DIV with overlay effect
-        var overlayBg = document.getElementById("myOverlay");
+        let overlayBg = document.getElementById("myOverlay");
 
         // Toggle between showing and hiding the sidebar, and add overlay effect
         function w3_open() {

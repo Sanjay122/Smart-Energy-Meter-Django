@@ -1,0 +1,17 @@
+{% extends 'admin/home.html' %}
+{% block content %}
+    <!-- Header -->
+    <header class="w3-container" style="padding-top: 30px">
+        <h5>
+            <b><i class="fa fa-dashboard"></i> Consumers</b>
+        </h5>
+    </header>
+    <div class="w3-row-padding w3-margin-bottom">
+        <ol>
+            {% for consumer in consumers %}
+                <li>{{ consumer }}</li>
+            {% endfor %}
+        </ol>
+    </div>
+    <!-- Footer -->
+{% endblock %}

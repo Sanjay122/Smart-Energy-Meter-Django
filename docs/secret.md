@@ -1,5 +1,8 @@
-Username : admin
-Email address: admin@gmail.com
-Password :admin@456321
+<b>Username : </b>admin
+<br>
+<b>Email address: </b>admin@gmail.com
+<br>
+<b>Password : </b>admin@456321
+<br>
 Superuser created successfully.
 

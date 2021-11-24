@@ -10,4 +10,3 @@ class Account(models.Model):
     role = models.CharField(max_length=120)
     authorities = models.CharField(max_length=120)
     isEnabled = models.BooleanField()
-    
