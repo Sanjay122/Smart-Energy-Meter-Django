@@ -1,0 +1,36 @@
+{% extends 'consumer/home.html' %}
+{% block content %}
+    <!-- Header -->
+    <header class="w3-container" style="padding-top: 30px">
+        <h5>
+            <b><i class="fa fa-dashboard"></i> Data</b>
+        </h5>
+    </header>
+    <div class="w3-row-padding w3-margin-bottom">
+        <div class="w3-row-padding w3-margin-bottom">
+            Today's readings are
+            <br>
+            <table class="w3-table-all">
+                <thead>
+                <th>Sno</th>
+                <th>Voltage</th>
+                <th>Current</th>
+                <th>Power Factor</th>
+                <th>Power Consumed</th>
+                </thead>
+                <tbody>
+                {% for data in within_a_day_wise_data %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ data.average_voltage }}</td>
+                        <td>{{ data.average_current }}</td>
+                        <td>{{ data.average_power_factor }}</td>
+                        <td>{{ data.power_consumed }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Footer -->
+{% endblock %}

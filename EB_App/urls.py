@@ -27,4 +27,7 @@ urlpatterns = [
     path('adminHome/', views.admin, name="adminHome"),
     path('admin/consumers/', views.get_consumers, name="consumers"),
     path('consumerHome/', views.consumer, name="consumerHome"),
+    path('insertWithinADayDataCreate/', views.WithinADayDataCreateView.as_view(), name="insertWithinADayDataCreate"),
+    path('reset_consumption_table/', views.reset_consumption_table, name="deleteConsumptionRecord"),
+    path('consumer_live_data/', views.get_consumer_day_wise_data, name="consumerLiveData"),
 ]
