@@ -39,6 +39,9 @@ INSTALLED_APPS = [
 
     # My apps
     "EB_App",
+
+    # Api
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

@@ -5,6 +5,8 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 from django.views import generic
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from . import models, forms
 
@@ -139,4 +141,39 @@ def get_consumer_day_wise_data(request):
             context = {'within_a_day_wise_data': get_within_a_day_wise_data(user, date=datetime.now()),
                        'live_data_tab_active': active_tab}
             return render(request=request, template_name="consumer/live_data.html", context=context)
+    return redirect('/login')
+
+
+@api_view()
+def get_consumer_day_wise_data_json(request, *args, **kwargs):
+    user = get_user(username=str(request.user))
+    if user != "AnonymousUser":
+        if user.account.role == "CONSUMER":
+            values = []
+            labels = []
+            i = 0
+            for obj in get_within_a_day_wise_data(models.Consumer.objects.get(id=user.id), date=datetime.now()):
+                i += 1
+                labels.append(i)
+                values.append(float(obj.average_current))
+            data = {
+                "labels": labels,
+                "default": values
+            }
+            return Response(data)
+    return redirect('/login')
+
+
+def get_consumer_data_admin(request, id):
+    user = get_user(username=str(request.user))
+    if user != "AnonymousUser":
+        if user.role == "ADMIN":
+            user_obj = User.objects.get(id=id)
+            account_obj = models.Account.objects.get(user=user_obj)
+            consumer_obj = models.Consumer.objects.get(account=account_obj)
+            context = {'consumer': consumer_obj,
+                       'consumers_tab_active': active_tab,
+                       'last_bill': models.Bill.objects.filter(consumer=consumer_obj).last(),
+                       'power_consumed': models.WithinADayData.objects.filter(consumer=consumer_obj).last().power_consumed}
+            return render(request=request, template_name="admin/consumer_data.html", context=context)
     return redirect('/login')

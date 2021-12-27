@@ -37,6 +37,11 @@ class Consumer(models.Model):
         return self.account.user.username
 
 
+class Message(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+
+
 class Bill(models.Model):
     consumer = models.ForeignKey(Consumer, on_delete=models.CASCADE)
     year = models.IntegerField()
@@ -100,22 +105,36 @@ class WithinADayData(models.Model):
         super().save(*args, **kwargs)
         today = datetime.now()
         yesterday = today - timedelta(days=1)
+        last_bill = Bill.objects.filter(consumer=self.consumer).last()
+        if last_bill is not None:
+            last_bill_reading = last_bill.present_bill_reading
+        else:
+            last_bill_reading = 0
+        units_consumed = self.power_consumed - last_bill_reading
+        if 80 < units_consumed % 100 < 100:
+            message = Message(User=self.consumer.account.user,
+                              message=str(units_consumed) + " units have been consumed on " + str(today))
+            message.save()
+        if self.average_power_factor < 0.7:
+            message = Message(User=User.objects.get(id=1),
+                              message="Power factor is " + str(self.average_power_factor) + ", add Capacitive bank")
+            message.save()
         if today.hour < 1:
             if DayWiseData.objects.filter(consumer=self.consumer, day=yesterday.day) is None:
-                withindaydata = WithinADayData.objects.filter(consumer=self.consumer, day=yesterday.day)
-                if withindaydata is not None:
+                within_a_day_data = WithinADayData.objects.filter(consumer=self.consumer, day=yesterday.day)
+                if within_a_day_data is not None:
                     average_voltage = 0
                     average_current = 0
                     average_power_factor = 0
                     power_consumed = 0
-                    for obj in withindaydata:
+                    for obj in within_a_day_data:
                         average_voltage += obj.average_voltage
                         average_current += obj.average_current
                         average_power_factor += obj.average_power_factor
                         power_consumed = obj.power_consumed
-                    average_voltage /= len(withindaydata)
-                    average_current /= len(withindaydata)
-                    average_power_factor /= len(withindaydata)
+                    average_voltage /= len(within_a_day_data)
+                    average_current /= len(within_a_day_data)
+                    average_power_factor /= len(within_a_day_data)
                     daywisedata = DayWiseData(consumer=self.consumer, year=yesterday.year, month=yesterday.month,
                                               week=yesterday.weekday() + 1, day=yesterday.day,
                                               power_consumed=power_consumed,
@@ -209,3 +228,8 @@ class WithinADayData(models.Model):
                                             power_consumption=units_consumed, bill_amount=price,
                                             paid=False)
                                 bill.save()
+                                previous_1_month_date = today.replace(day=1) - timedelta(days=1)
+                                previous_2_month_date = previous_1_month_date.replace(day=1) - timedelta(days=1)
+                                WithinADayData.objects.get(consumer=self.consumer, month=previous_2_month_date).delete()
+                                DayWiseData.objects.get(consumer=self.consumer, month=previous_2_month_date).delete()
+                                WeekWiseData.objects.get(consumer=self.consumer, month=previous_2_month_date).delete()

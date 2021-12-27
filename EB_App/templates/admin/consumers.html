@@ -9,7 +9,7 @@
     <div class="w3-row-padding w3-margin-bottom">
         <ol>
             {% for consumer in consumers %}
-                <li>{{ consumer }}</li>
+                <li><a href="{% url 'consumerDataAdmin' id=consumer.id %}">{{ consumer }}</a></li>
             {% endfor %}
         </ol>
     </div>

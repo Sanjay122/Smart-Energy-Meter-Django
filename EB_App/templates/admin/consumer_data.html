@@ -1,0 +1,61 @@
+{% extends 'admin/home.html' %}
+{% block content %}
+    <!-- Header -->
+    <header class="w3-container" style="padding-top: 30px">
+        <h5>
+            <b><i class="fa fa-dashboard"></i> Consumer Data</b>
+        </h5>
+    </header>
+    <div class="w3-row-padding w3-margin-bottom">
+    <table class="w3-table-all">
+        <tbody>
+        <tr>
+            <td>Name</td>
+            <td>{{consumer.account.user.username}}</td>
+        </tr>
+        <tr>
+            <td>EB number</td>
+            <td>{{ consumer.eb_number }}</td>
+        </tr>
+        <tr>
+            <td>Street</td>
+            <td>{{ consumer.street }}</td>
+        </tr>
+        <tr>
+            <td>City</td>
+            <td>{{ consumer.city }}</td>
+        </tr>
+        <tr>
+            <td>Post Office</td>
+            <td>{{ consumer.post_office }}</td>
+        </tr>
+        <tr>
+            <td>Taluk</td>
+            <td>{{ consumer.taluk }}</td>
+        </tr>
+        <tr>
+            <td>District</td>
+            <td>{{ consumer.district }}</td>
+        </tr>
+        <tr>
+            <td>State</td>
+            <td>{{ consumer.state }}</td>
+        </tr>
+        <tr>
+            <td>Pin Code</td>
+            <td>{{ consumer.pin_number }}</td>
+        </tr>
+         <tr>
+            <td>Power Consumed</td>
+            <td>{{ power_consumed }}</td>
+        </tr>
+         <tr>
+            <td>Last Bill</td>
+            <td>{{ last_bill }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    </div>
+    <!-- Footer -->
+{% endblock %}
