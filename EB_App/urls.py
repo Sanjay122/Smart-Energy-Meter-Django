@@ -32,4 +32,5 @@ urlpatterns = [
     path('consumer_live_data/', views.get_consumer_day_wise_data, name="consumerLiveData"),
     path('consumer_live_data_api/', views.get_consumer_day_wise_data_json, name="consumerLiveDataApi"),
     path('admin/consumer_data/<int:id>/', views.get_consumer_data_admin, name="consumerDataAdmin"),
+    path('admin/generate_random_data/', views.generate_random_data, name="generateRandomData"),
 ]

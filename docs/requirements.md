@@ -6,4 +6,6 @@
 <li>pip install djangorestframework</li>
 <li>pip install markdown</li>
 <li>pip install django-filter</li>
+<li>pip install requests</li>
+<li>pip install beautifulsoup4</li>
 </ol>

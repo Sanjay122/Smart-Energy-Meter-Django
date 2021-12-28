@@ -38,7 +38,7 @@ class Consumer(models.Model):
 
 
 class Message(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
     message = models.TextField()
 
 
@@ -46,10 +46,10 @@ class Bill(models.Model):
     consumer = models.ForeignKey(Consumer, on_delete=models.CASCADE)
     year = models.IntegerField()
     month = models.IntegerField()
-    last_bill_reading = models.DecimalField(decimal_places=2, max_digits=10)
-    present_bill_reading = models.DecimalField(decimal_places=2, max_digits=10)
-    power_consumption = models.DecimalField(decimal_places=2, max_digits=10)
-    bill_amount = models.DecimalField(decimal_places=2, max_digits=10)
+    last_bill_reading = models.FloatField()
+    present_bill_reading = models.FloatField()
+    power_consumption = models.FloatField()
+    bill_amount = models.FloatField()
     paid = models.BooleanField()
 
 
@@ -57,10 +57,10 @@ class MonthWiseData(models.Model):
     consumer = models.ForeignKey(Consumer, on_delete=models.CASCADE)
     year = models.IntegerField()
     month = models.IntegerField()
-    power_consumed = models.DecimalField(decimal_places=2, max_digits=10)
-    average_voltage = models.DecimalField(decimal_places=2, max_digits=10)
-    average_current = models.DecimalField(decimal_places=2, max_digits=10)
-    average_power_factor = models.DecimalField(decimal_places=2, max_digits=10)
+    power_consumed = models.FloatField()
+    average_voltage = models.FloatField()
+    average_current = models.FloatField()
+    average_power_factor = models.FloatField()
 
 
 class WeekWiseData(models.Model):
@@ -68,10 +68,10 @@ class WeekWiseData(models.Model):
     year = models.IntegerField()
     month = models.IntegerField()
     week = models.IntegerField()
-    power_consumed = models.DecimalField(decimal_places=2, max_digits=10)
-    average_voltage = models.DecimalField(decimal_places=2, max_digits=10)
-    average_current = models.DecimalField(decimal_places=2, max_digits=10)
-    average_power_factor = models.DecimalField(decimal_places=2, max_digits=10)
+    power_consumed = models.FloatField()
+    average_voltage = models.FloatField()
+    average_current = models.FloatField()
+    average_power_factor = models.FloatField()
 
 
 class DayWiseData(models.Model):
@@ -80,10 +80,10 @@ class DayWiseData(models.Model):
     month = models.IntegerField()
     week = models.IntegerField()
     day = models.IntegerField()
-    power_consumed = models.DecimalField(decimal_places=2, max_digits=10)
-    average_voltage = models.DecimalField(decimal_places=2, max_digits=10)
-    average_current = models.DecimalField(decimal_places=2, max_digits=10)
-    average_power_factor = models.DecimalField(decimal_places=2, max_digits=10)
+    power_consumed = models.FloatField()
+    average_voltage = models.FloatField()
+    average_current = models.FloatField()
+    average_power_factor = models.FloatField()
 
 
 class WithinADayData(models.Model):
@@ -93,10 +93,10 @@ class WithinADayData(models.Model):
     week = models.IntegerField()
     day = models.IntegerField()
     hour = models.IntegerField()
-    power_consumed = models.DecimalField(decimal_places=2, max_digits=10)
-    average_voltage = models.DecimalField(decimal_places=2, max_digits=10)
-    average_current = models.DecimalField(decimal_places=2, max_digits=10)
-    average_power_factor = models.DecimalField(decimal_places=2, max_digits=10)
+    power_consumed = models.FloatField()
+    average_voltage = models.FloatField()
+    average_current = models.FloatField()
+    average_power_factor = models.FloatField()
 
     def get_absolute_url(self):
         return reverse("home")
@@ -112,11 +112,11 @@ class WithinADayData(models.Model):
             last_bill_reading = 0
         units_consumed = self.power_consumed - last_bill_reading
         if 80 < units_consumed % 100 < 100:
-            message = Message(User=self.consumer.account.user,
+            message = Message(account=self.consumer.account,
                               message=str(units_consumed) + " units have been consumed on " + str(today))
             message.save()
         if self.average_power_factor < 0.7:
-            message = Message(User=User.objects.get(id=1),
+            message = Message(account=Account.objects.get(id=1),
                               message="Power factor is " + str(self.average_power_factor) + ", add Capacitive bank")
             message.save()
         if today.hour < 1:

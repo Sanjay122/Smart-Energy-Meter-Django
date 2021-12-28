@@ -8,7 +8,7 @@ from django.views import generic
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from . import models, forms
+from . import models, forms,web_connection
 
 # Create your views here.
 
@@ -57,7 +57,7 @@ def admin(request):
     user_role = get_user_role(request)
     if user_role == "ADMIN":
         return render(request=request, template_name="admin/home.html")
-    return redirect('/login')
+    return redirect('login')
 
 
 def consumer(request):
@@ -65,7 +65,7 @@ def consumer(request):
     if user_role == "CONSUMER":
         context = {'overview_tab_active': active_tab}
         return render(request=request, template_name="consumer/home.html", context=context)
-    return redirect('/login')
+    return redirect('login')
 
 
 def get_consumers(request):
@@ -79,7 +79,7 @@ def get_consumers(request):
         context = {'consumers': consumers,
                    'consumers_tab_active': active_tab}
         return render(request=request, template_name="admin/consumers.html", context=context)
-    return redirect('/login')
+    return redirect('login')
 
 
 class WithinADayDataCreateView(generic.CreateView):
@@ -87,17 +87,20 @@ class WithinADayDataCreateView(generic.CreateView):
     template_name = 'consumer/WithinADayDataCreate.html'
     form_class = forms.WithinADayDataModelForm
 
+def reset_consumption_table_granted():
+    models.WithinADayData.objects.all().delete()
+    models.DayWiseData.objects.all().delete()
+    models.WeekWiseData.objects.all().delete()
+    models.MonthWiseData.objects.all().delete()
+    models.Bill.objects.all().delete()
+    models.Message.objects.all().delete()
 
 def reset_consumption_table(request):
     user_role = get_user_role(request)
     if user_role == "ADMIN":
-        models.WithinADayData.objects.all().delete()
-        models.DayWiseData.objects.all().delete()
-        models.WeekWiseData.objects.all().delete()
-        models.MonthWiseData.objects.all().delete()
-        models.Bill.objects.all().delete()
+        reset_consumption_table_granted()
         return redirect("adminHome")
-    return redirect('/login')
+    return redirect('login')
 
 
 def get_day_wise_data(consumer_obj, date):
@@ -141,7 +144,7 @@ def get_consumer_day_wise_data(request):
             context = {'within_a_day_wise_data': get_within_a_day_wise_data(user, date=datetime.now()),
                        'live_data_tab_active': active_tab}
             return render(request=request, template_name="consumer/live_data.html", context=context)
-    return redirect('/login')
+    return redirect('login')
 
 
 @api_view()
@@ -161,7 +164,7 @@ def get_consumer_day_wise_data_json(request, *args, **kwargs):
                 "default": values
             }
             return Response(data)
-    return redirect('/login')
+    return redirect('login')
 
 
 def get_consumer_data_admin(request, id):
@@ -174,6 +177,17 @@ def get_consumer_data_admin(request, id):
             context = {'consumer': consumer_obj,
                        'consumers_tab_active': active_tab,
                        'last_bill': models.Bill.objects.filter(consumer=consumer_obj).last(),
-                       'power_consumed': models.WithinADayData.objects.filter(consumer=consumer_obj).last().power_consumed}
+                       'power_consumed': models.WithinADayData.objects.filter(
+                           consumer=consumer_obj).last().power_consumed}
             return render(request=request, template_name="admin/consumer_data.html", context=context)
-    return redirect('/login')
+    return redirect('login')
+
+
+def generate_random_data(request):
+    user = get_user(username=str(request.user))
+    if user != "AnonymousUser":
+        if user.role == "ADMIN":
+            reset_consumption_table_granted()
+            web_connection.generate()
+            return redirect('adminHome')
+    return redirect('login')
