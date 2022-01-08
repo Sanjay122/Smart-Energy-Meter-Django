@@ -120,8 +120,14 @@ class WithinADayData(models.Model):
                               message="Power factor is " + str(self.average_power_factor) + ", add Capacitive bank")
             message.save()
         if today.hour < 1:
-            if DayWiseData.objects.filter(consumer=self.consumer, day=yesterday.day) is None:
-                within_a_day_data = WithinADayData.objects.filter(consumer=self.consumer, day=yesterday.day)
+            if DayWiseData.objects.filter(consumer=self.consumer,
+                                          year=yesterday.year,
+                                          month=yesterday.month,
+                                          day=yesterday.day) is None:
+                within_a_day_data = WithinADayData.objects.filter(consumer=self.consumer,
+                                                                  year=yesterday.year,
+                                                                  month=yesterday.month,
+                                                                  day=yesterday.day)
                 if within_a_day_data is not None:
                     average_voltage = 0
                     average_current = 0
@@ -135,33 +141,42 @@ class WithinADayData(models.Model):
                     average_voltage /= len(within_a_day_data)
                     average_current /= len(within_a_day_data)
                     average_power_factor /= len(within_a_day_data)
-                    daywisedata = DayWiseData(consumer=self.consumer, year=yesterday.year, month=yesterday.month,
-                                              week=yesterday.weekday() + 1, day=yesterday.day,
-                                              power_consumed=power_consumed,
-                                              average_voltage=average_voltage, average_current=average_current,
-                                              average_power_factor=average_power_factor)
-                    daywisedata.save()
-                    if today.weekday() != yesterday.weekday():
+                    day_wise_data = DayWiseData(consumer=self.consumer, year=yesterday.year,
+                                                month=yesterday.month,
+                                                week=yesterday.isocalendar()[1],
+                                                day=yesterday.day,
+                                                power_consumed=power_consumed,
+                                                average_voltage=average_voltage,
+                                                average_current=average_current,
+                                                average_power_factor=average_power_factor)
+                    day_wise_data.save()
+                    # WeekWiseData
+                    if today.isocalendar()[1] != yesterday.isocalendar()[1]:
                         if WeekWiseData.objects.filter(consumer=self.consumer,
-                                                       week=yesterday.weekday() + 1) is None:
-                            daywisedatas = DayWiseData.objects.filter(consumer=self.consumer,
-                                                                      week=yesterday.weekday() + 1)
-                            if daywisedatas is not None:
+                                                       year=yesterday.year,
+                                                       month=yesterday.month,
+                                                       week=yesterday.isocalendar()[1]) is None:
+                            day_wise_data = DayWiseData.objects.filter(consumer=self.consumer,
+                                                                       year=yesterday.year,
+                                                                       month=yesterday.month,
+                                                                       week=yesterday.isocalendar()[1])
+                            if day_wise_data is not None:
                                 average_voltage = 0
                                 average_current = 0
                                 average_power_factor = 0
                                 power_consumed = 0
-                                for obj in daywisedatas:
+                                for obj in day_wise_data:
                                     average_voltage += obj.average_voltage
                                     average_current += obj.average_current
                                     average_power_factor += obj.average_power_factor
                                     power_consumed = obj.power_consumed
-                                average_voltage /= len(daywisedatas)
-                                average_current /= len(daywisedatas)
-                                average_power_factor /= len(daywisedatas)
-                                week_wise_data = WeekWiseData(consumer=self.consumer, year=yesterday.year,
+                                average_voltage /= len(day_wise_data)
+                                average_current /= len(day_wise_data)
+                                average_power_factor /= len(day_wise_data)
+                                week_wise_data = WeekWiseData(consumer=self.consumer,
+                                                              year=yesterday.year,
                                                               month=yesterday.month,
-                                                              week=yesterday.weekday() + 1,
+                                                              week=yesterday.isocalendar()[1],
                                                               power_consumed=power_consumed,
                                                               average_voltage=average_voltage,
                                                               average_current=average_current,
@@ -169,8 +184,10 @@ class WithinADayData(models.Model):
                                 week_wise_data.save()
                     if today.month != yesterday.month:
                         if MonthWiseData.objects.filter(consumer=self.consumer,
+                                                        year=yesterday.year,
                                                         month=yesterday.month) is None:
                             week_wise_data = WeekWiseData.objects.filter(consumer=self.consumer,
+                                                                         year=yesterday.year,
                                                                          month=yesterday.month)
                             if week_wise_data is not None:
                                 average_voltage = 0
@@ -186,7 +203,8 @@ class WithinADayData(models.Model):
                                 average_voltage /= len(week_wise_data)
                                 average_current /= len(week_wise_data)
                                 average_power_factor /= len(week_wise_data)
-                                month_wise_data = MonthWiseData(consumer=self.consumer, year=yesterday.year,
+                                month_wise_data = MonthWiseData(consumer=self.consumer,
+                                                                year=yesterday.year,
                                                                 month=yesterday.month,
                                                                 power_consumed=power_consumed,
                                                                 average_voltage=average_voltage,
@@ -222,14 +240,25 @@ class WithinADayData(models.Model):
                                              (300 * 4.6) +
                                              (units_consumed - 500) * 6.6) + 50
 
-                                bill = Bill(consumer=self.consumer, year=yesterday.year,
+                                bill = Bill(consumer_id=1,
+                                            year=yesterday.year,
+                                            month=yesterday.month,
                                             last_bill_reading=last_bill_reading,
                                             present_bill_reading=power_consumed,
-                                            power_consumption=units_consumed, bill_amount=price,
+                                            power_consumption=units_consumed,
+                                            bill_amount=price,
                                             paid=False)
                                 bill.save()
                                 previous_1_month_date = today.replace(day=1) - timedelta(days=1)
                                 previous_2_month_date = previous_1_month_date.replace(day=1) - timedelta(days=1)
-                                WithinADayData.objects.get(consumer=self.consumer, month=previous_2_month_date).delete()
-                                DayWiseData.objects.get(consumer=self.consumer, month=previous_2_month_date).delete()
-                                WeekWiseData.objects.get(consumer=self.consumer, month=previous_2_month_date).delete()
+                                try:
+                                    WithinADayData.objects.get(consumer=self.consumer, year=previous_2_month_date.year,
+                                                               month=previous_2_month_date.month).delete()
+                                    DayWiseData.objects.get(consumer=self.consumer, year=previous_2_month_date.year,
+                                                            month=previous_2_month_date.month).delete()
+                                    WeekWiseData.objects.get(consumer=self.consumer, year=previous_2_month_date.year,
+                                                             month=previous_2_month_date.month).delete()
+                                    Message.objects.get(consumer=self.consumer, year=previous_2_month_date.year,
+                                                        month=previous_2_month_date.month).delete()
+                                except:
+                                    print("Error in deleting 2nd month data")

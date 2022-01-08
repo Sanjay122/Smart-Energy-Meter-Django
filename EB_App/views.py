@@ -8,7 +8,7 @@ from django.views import generic
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from . import models, forms,web_connection
+from . import models, forms, web_connection
 
 # Create your views here.
 
@@ -48,7 +48,8 @@ def redirect_login_successful(request):
 def get_home(request):
     user_role = get_user_role(request)
     if user_role == "AnonymousUser":
-        return render(request=request, template_name="base.html")
+        context = {'base': active_tab}
+        return render(request=request, template_name="base.html",context=context)
     else:
         return redirect("loginSuccessful")
 
@@ -60,11 +61,23 @@ def admin(request):
     return redirect('login')
 
 
+# def consumer(request):
+#     user_role = get_user_role(request)
+#     if user_role == "CONSUMER":
+#         context = {'overview_tab_active': active_tab}
+#         return render(request=request, template_name="consumer/home.html", context=context)
+#     return redirect('login')
+
+
 def consumer(request):
-    user_role = get_user_role(request)
-    if user_role == "CONSUMER":
-        context = {'overview_tab_active': active_tab}
-        return render(request=request, template_name="consumer/home.html", context=context)
+    user = get_user(username=str(request.user))
+    if user != "AnonymousUser":
+        if user.account.role == "CONSUMER":
+            units_consumed = models.WithinADayData.objects.last()  # type: models.WithinADayData
+            context = {'overview_tab_active': active_tab,
+                       'consumer': user,
+                       'last_within_a_day_data': units_consumed}
+            return render(request=request, template_name="consumer/home.html", context=context)
     return redirect('login')
 
 
@@ -87,6 +100,7 @@ class WithinADayDataCreateView(generic.CreateView):
     template_name = 'consumer/WithinADayDataCreate.html'
     form_class = forms.WithinADayDataModelForm
 
+
 def reset_consumption_table_granted():
     models.WithinADayData.objects.all().delete()
     models.DayWiseData.objects.all().delete()
@@ -94,6 +108,7 @@ def reset_consumption_table_granted():
     models.MonthWiseData.objects.all().delete()
     models.Bill.objects.all().delete()
     models.Message.objects.all().delete()
+
 
 def reset_consumption_table(request):
     user_role = get_user_role(request)
@@ -141,7 +156,7 @@ def get_consumer_day_wise_data(request):
     user = get_user(username=str(request.user))
     if user != "AnonymousUser":
         if user.account.role == "CONSUMER":
-            context = {'within_a_day_wise_data': get_within_a_day_wise_data(user, date=datetime.now()),
+            context = {'within_a_day_wise_data': get_within_a_day_wise_data(user, date=datetime(2021,12,29)),
                        'live_data_tab_active': active_tab}
             return render(request=request, template_name="consumer/live_data.html", context=context)
     return redirect('login')
@@ -155,7 +170,7 @@ def get_consumer_day_wise_data_json(request, *args, **kwargs):
             values = []
             labels = []
             i = 0
-            for obj in get_within_a_day_wise_data(models.Consumer.objects.get(id=user.id), date=datetime.now()):
+            for obj in get_within_a_day_wise_data(models.Consumer.objects.get(id=user.id), date=datetime(2021,12,29)):
                 i += 1
                 labels.append(i)
                 values.append(float(obj.average_current))
@@ -188,6 +203,31 @@ def generate_random_data(request):
     if user != "AnonymousUser":
         if user.role == "ADMIN":
             reset_consumption_table_granted()
+
             web_connection.generate()
             return redirect('adminHome')
     return redirect('login')
+
+
+def get_bills(consumer_id):
+    bills = []
+    for obj in models.Bill.objects.filter(consumer_id=consumer_id):
+        bills.append(obj)
+    return bills
+
+
+def get_bills_consumer(request):
+    user = get_user(username=str(request.user))
+    if user != "AnonymousUser":
+        if user.account.role == "CONSUMER":
+            bills = get_bills(user.id)
+            context = {'bill_tab_active': active_tab,
+                       'consumer': user,
+                       'bills': bills}
+            return render(request=request, template_name="consumer/bills.html", context=context)
+    return redirect('login')
+
+
+def unit_rate(request):
+    context = {'unit_rate_tab_active': active_tab}
+    return render(request=request, template_name='about_bill_calc.html', context=context)

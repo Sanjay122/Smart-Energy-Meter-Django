@@ -37,20 +37,40 @@
         <!-- Header -->
         <header class="w3-container" style="padding-top: 30px">
             <h5>
-                <b><i class="fa fa-dashboard"></i> My Dashboard</b>
+                <b><i class="fa fa-dashboard"></i> Bills</b>
             </h5>
         </header>
         <div class="w3-row-padding w3-margin-bottom">
-            Welcome {{ consumer.account.user.username }}
-            <br>
-            Units consumed : {{ last_within_a_day_data.power_consumed }}kWh
+            Your bills are
+        <table class="w3-table-all">
+            <thead>
+            <th>Sno</th>
+            <th>Year</th>
+            <th>Month</th>
+            <th>Units kWh</th>
+            <th>Amount ₹</th>
+            <th>Paid</th>
+            </thead>
+            <tbody>
+            {% for bill in bills %}
+            <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ bill.year }}</td>
+            <td>{{ bill.month }}</td>
+            <td>{{ bill.power_consumption }}</td>
+            <td>{{ bill.bill_amount }}</td>
+            <td>{{ bill.paid }}</td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
         </div>
         <!-- Footer -->
 
     {% endblock %}
     <!-- End page content -->
 </div>
-
 </body>
 </html>
 

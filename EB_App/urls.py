@@ -22,6 +22,7 @@ urlpatterns = [
     path('', views.get_home, name="home"),
     path('login/', views.LoginView.as_view(), name='login'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
+    path('unit_rate/', views.unit_rate, name='unitRate'),
     # path('', include('django.contrib.auth.urls')),
     path("accounts/profile/", views.redirect_login_successful, name="loginSuccessful"),
     path('adminHome/', views.admin, name="adminHome"),
@@ -33,4 +34,5 @@ urlpatterns = [
     path('consumer_live_data_api/', views.get_consumer_day_wise_data_json, name="consumerLiveDataApi"),
     path('admin/consumer_data/<int:id>/', views.get_consumer_data_admin, name="consumerDataAdmin"),
     path('admin/generate_random_data/', views.generate_random_data, name="generateRandomData"),
+    path('consumer/get_bills/', views.get_bills_consumer, name="consumerBills"),
 ]

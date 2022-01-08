@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Energy Meter</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        html, body, h1, h2, h3, h4, h5 {
+            font-family: sans-serif
+        }
+    </style>
+</head>
+
+<body class="w3-light-grey">
+
+
+<!-- Top container -->
+<div class="w3-bar w3-top w3-black w3-large" style="z-index: 4">
+    <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();">
+        <i class="fa fa-bars"></i>  Menu
+    </button>
+    <span class="w3-bar-item w3-left">Smart Energy Meter</span> <span class="w3-bar-item w3-right"><a
+        href="{% url "login" %}">Sign in</a></span>
+</div>
+
+<!-- Sidebar/menu -->
+{% include 'sidebar.html' %}
+<!-- !PAGE CONTENT! -->
+{% block content %}
+    <div class="w3-main" style="margin-left: 300px; margin-top: 43px;">
+        <!-- Header -->
+        <header class="w3-container" style="padding-top: 30px">
+            <h5>
+                <b><i class="fa fa-dashboard"></i> Per unit rate in Tamilnadu 2020 – Domestic:</b>
+            </h5>
+        </header>
+        <div class="w3-row-padding w3-margin-bottom">
+            <div class="w3-row-padding w3-margin-bottom">
+                <h3>What is Tariff:</h3>
+                <p>The way of charging your electricity bill based on the consumption with different charges is
+                    called a tariff. i.e you have consumed 600 units means, you get different prices for each step
+                    of unit levels. You get small money for low units up to 100 and small amount hike with another
+                    level up to 200 units and again small hike for 500 units levels.</p>
+                <h3>Per unit rate in Tamilnadu 2020 – Domestic:</h3>
+                <p>Tamil nadu electricity board has 4 tariff category based on the consumer’s energy consumption.
+                    They are,</p>
+                <ul>
+                    <li>For 0 to 100 units the per unit is ₹ 0/-</li>
+                    <li>For 0 to 200 units, for the first 100 unit the per unit cost is zero and the next 100 units,
+                        the consumer shall pay ₹ 1.5 per unit.
+                    </li>
+                    <li>For 0 to 500 units, the consumer shall pay ₹ 0 for the first 100 units, for the next 100
+                        units the consumer shall pay ₹ 2 per unit, for the next 300 units the unit cost is ₹3.00/-
+                    </li>
+                    <li>For above 500 units, the per unit cost is as shown in the table.</li>
+                </ul>
+                <table class="w3-table-all">
+                    <thead>
+                    <tr>
+                        <th colspan="4">&nbsp;Per Unit rate in TNEB</th>
+                    </tr>
+                    <tr>
+                        <th>Scheme</th>
+                        <th>Unit</th>
+                        <th>Per unit(₹)</th>
+                        <th>Fixed Charges&nbsp; Per Month</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+
+                    <tr>
+                        <td>0 to 100</td>
+                        <td>0-100</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2">0 to 200</td>
+                        <td>0-100</td>
+                        <td></td>
+                        <td rowspan="2">20</td>
+                    </tr>
+                    <tr>
+                        <td>101-200</td>
+                        <td>1.5</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3">0 to 500</td>
+                        <td>0-100</td>
+                        <td></td>
+                        <td rowspan="3">30</td>
+                    </tr>
+                    <tr>
+                        <td>101-200</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>201-500</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="4">&gt; 500</td>
+                        <td>0-100</td>
+                        <td></td>
+                        <td rowspan="4">50</td>
+                    </tr>
+                    <tr>
+                        <td>101-200</td>
+                        <td>3.5</td>
+                    </tr>
+                    <tr>
+                        <td>201-500</td>
+                        <td>4.6</td>
+                    </tr>
+                    <tr>
+                        <td>&gt;500</td>
+                        <td>6.6</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Footer -->
+
+        <!-- End page content -->
+    </div>
+{% endblock %}
+
+</body>
+
+</html>
