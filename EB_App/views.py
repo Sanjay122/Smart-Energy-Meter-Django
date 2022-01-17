@@ -156,7 +156,7 @@ def get_consumer_day_wise_data(request):
     user = get_user(username=str(request.user))
     if user != "AnonymousUser":
         if user.account.role == "CONSUMER":
-            context = {'within_a_day_wise_data': get_within_a_day_wise_data(user, date=datetime(2021,12,29)),
+            context = {'within_a_day_wise_data': get_within_a_day_wise_data(user, date=datetime.now()),
                        'live_data_tab_active': active_tab}
             return render(request=request, template_name="consumer/live_data.html", context=context)
     return redirect('login')
@@ -170,7 +170,7 @@ def get_consumer_day_wise_data_json(request, *args, **kwargs):
             values = []
             labels = []
             i = 0
-            for obj in get_within_a_day_wise_data(models.Consumer.objects.get(id=user.id), date=datetime(2021,12,29)):
+            for obj in get_within_a_day_wise_data(models.Consumer.objects.get(id=user.id), date=datetime.now()):
                 i += 1
                 labels.append(i)
                 values.append(float(obj.average_current))

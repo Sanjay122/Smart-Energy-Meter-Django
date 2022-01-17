@@ -1,4 +1,4 @@
-<b>Username : </b>admin
+<b>Username : </b>masteradmin
 <br>
 <b>Email address: </b>admin@gmail.com
 <br>
@@ -6,3 +6,8 @@
 <br>
 Superuser created successfully.
 
+<b>Username : </b>Sabhapathi
+<br>
+<b>Password : </b>aswin1233
+<br>
+user created successfully.
